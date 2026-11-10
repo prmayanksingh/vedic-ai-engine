@@ -1,6 +1,6 @@
 import { OllamaGenerateRequest, OllamaGenerateResponse } from "../types/types.js";
 
-
+// OLLAMA URL
 const OLLAMA_API_URL = "http://localhost:11434/api/generate";
 
 export async function generateVedicResponse(
