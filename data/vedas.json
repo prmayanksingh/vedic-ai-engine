@@ -1,0 +1,24 @@
+[
+  {
+    "id": "rv_1_1_1",
+    "veda": "Rigveda",
+    "mandala": 1,
+    "sukta": 1,
+    "verse": 1,
+    "deity": "Agni",
+    "sanskrit": "अग्निमीळे पुरोहितं यज्ञस्य देवमृत्विजम् । होतारं रत्नधातमम् ॥",
+    "transliteration": "agnim īḷe purohitaṁ yajñasya devam ṛtvijam | hotāraṁ ratnadhātamam ||",
+    "translation": "I praise Agni, the household priest, the divine minister of sacrifice, the invoker, best bestower of treasures."
+  },
+  {
+    "id": "rv_1_1_2",
+    "veda": "Rigveda",
+    "mandala": 1,
+    "sukta": 1,
+    "verse": 2,
+    "deity": "Agni",
+    "sanskrit": "अग्निः पूर्वेभिरृषिभिरीड्यो नूतनैरुत । स देवाँ एह वक्षति ॥",
+    "transliteration": "agniḥ pūrvebhir ṛṣibhir īḍyo nūtanair uta | sa devām̐ eha vakṣati ||",
+    "translation": "Worthy is Agni to be praised by ancient seers and by present ones; may he bring the gods here."
+  }
+]
