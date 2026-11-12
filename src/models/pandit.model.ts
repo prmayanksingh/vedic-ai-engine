@@ -36,7 +36,7 @@ const panditSchema = new Schema<IPandit>({
     },
     experienceYears: {
         type: Number,
-        require: true,
+        required: true,
         min: [0, "Experience can not be negative"],
     },
     isActive: {
