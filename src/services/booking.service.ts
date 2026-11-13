@@ -136,4 +136,52 @@ export class BookingService {
             totalAmount: booking.totalAmount
         }
     }
+
+    // Reschedule an existing booking (verifies Pandit is free on new date/slot)
+    static async rescheduleBooking(params: {
+        bookingCode: string,
+        newDate: string,
+        newTimeSlot: TimeSlot
+    }) {
+        const booking = await bookingModel.findOne({
+            bookingCode: params.bookingCode.trim().toUpperCase(),
+        });
+
+        if (!booking) {
+            throw new Error(`Booking ${params.bookingCode} not found.`);
+        }
+
+        if (booking.status === "CANCELLED") {
+            throw new Error(`Booking '${booking.bookingCode}' is already cancelled and cannot be rescheduled.`);
+        }
+
+        // Check if the assigned Pandit is free on the new date/slot
+        const conflict = await bookingModel.findOne({
+            _id: { $ne: booking._id },
+            panditId: booking.panditId,
+            date: params.newDate,
+            timeSlot: params.newTimeSlot,
+            status: { $ne: "CANCELLED" }
+        });
+
+        if (conflict) {
+            throw new Error(
+                `${booking.panditName} is already booked on ${params.newDate} (${params.newTimeSlot}). Please choose another slot or date.`
+            );
+        }
+
+        booking.date = params.newDate;
+        booking.timeSlot = params.newTimeSlot;
+        booking.status = "RESCHEDULED";
+        await booking.save();
+
+        return {
+            bookingCode: booking.bookingCode,
+            status: booking.status,
+            ritualName: booking.ritualName,
+            panditName: booking.panditName,
+            newDate: booking.date,
+            newTimeSlot: booking.timeSlot,
+        };
+    }
 }
