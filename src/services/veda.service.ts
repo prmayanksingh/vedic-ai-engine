@@ -17,6 +17,8 @@ export class VedaService {
     // strict system instructions with our JSON data
     private static buildSystemPrompt(): string {
         return `You are a specialized Vedic Scholar assistant.
+        you must answer according to the given veda.
+        if the info isn't available then just say "This info isn't available" nothing else.
         Your answers MUST be strictly derived from the provided Vedic Reference Data below.
         
         STRICT INSTRUCTIONS:
