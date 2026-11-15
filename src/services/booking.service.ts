@@ -16,7 +16,7 @@ export interface CreateBookingInput {
 
 export class BookingService {
     // check available Pandit for a city, ritual type, date & time slot
-    static async checkavailability(params: {
+    static async checkAvailability(params: {
         city: string,
         ritualType: "pooja" | "havan",
         date: string,
@@ -68,7 +68,7 @@ export class BookingService {
 
     // create a confirmed ritual booking with automatic Pandit assigment & pricing
     static async createBooking(input: CreateBookingInput) {
-        const normalizedCity = input.city.trim().toString();
+        const normalizedCity = input.city.trim().toLowerCase();
 
         const escapedName = input.ritualName.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -86,7 +86,7 @@ export class BookingService {
         }
 
         // check availability for ritual's type
-        const availability = await this.checkavailability({
+        const availability = await this.checkAvailability({
             city: normalizedCity,
             ritualType: ritual.ritualType,
             date: input.date,
@@ -182,6 +182,38 @@ export class BookingService {
             panditName: booking.panditName,
             newDate: booking.date,
             newTimeSlot: booking.timeSlot,
+        };
+    }
+
+    static async cancelBooking(params: {
+        bookingCode: string,
+        reason?: string
+    }) {
+        const booking = await bookingModel.findOne({
+            bookingCode: params.bookingCode.trim().toUpperCase()
+        });
+
+        if (!booking) {
+            throw new Error(`booking ${params.bookingCode} not found`);
+        }
+
+        if (booking.status === "CANCELLED") {
+            return {
+                bookingCode: booking.bookingCode,
+                status: "CANCELLED",
+                message: "booking was already cancelled."
+            }
+        }
+
+        booking.status = "CANCELLED";
+        booking.cancellationReason = params.reason || "Cancelled by devotee";
+        await booking.save();
+
+        return {
+            bookingCode: booking.bookingCode,
+            status: booking.status,
+            ritualName: booking.ritualName,
+            cancellationReason: booking.cancellationReason
         };
     }
 }
