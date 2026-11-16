@@ -5,7 +5,7 @@ import { BookingService } from "../services/booking.service.js";
 
 
 
-export const riualTools = {
+export const ritualTools = {
     getRitualCatalog: tool({
         description: "Fetch available Vedic rituals (poojas and havans), their Dakshina pricing, duration, samagri kit price, and included samagri items.",
         inputSchema: z.object({
@@ -14,7 +14,7 @@ export const riualTools = {
                 .describe("Optional filter by ritual type: 'pooja' or 'havan'")
         }),
         execute: async ({ ritualType }) => {
-            const filter = ritualType ? ritualType : {};
+            const filter = ritualType ? { ritualType } : {};
             const rituals = await ritualModel.find(filter).lean();
             return {
                 success: true,
@@ -48,7 +48,7 @@ export const riualTools = {
         }),
         execute: async ({ city, ritualType, date, timeSlot }) => {
             try {
-                const result = BookingService.checkAvailability({
+                const result = await BookingService.checkAvailability({
                     city,
                     ritualType,
                     date,
@@ -59,5 +59,78 @@ export const riualTools = {
                 return { success: false, error: error.message };
             }
         }
+    }),
+    createRitualBooking: tool({
+        description: "Book a Pooja or Havan with an available Pandit. Only call this AFTER collecting devoteeName, devoteePhone, city, address, ritualName, date (YYYY-MM-DD), and timeSlot.",
+        inputSchema: z.object({
+            devoteeName: z.string().describe("Full name of the devotee"),
+            devoteePhone: z.string().describe("10-digit mobile number of the devotee"),
+            city: z.string().describe("City name in lowercase, e.g. 'gurugram' or 'noida'"),
+            address: z.string().describe("Full home or venue addres for the ritual"),
+            ritualName: z
+                .string()
+                .describe("Exact name of the ritual from the catalog, e.g. 'Griha Pravesh Havan'"),
+            date: z
+                .string()
+                .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+                .describe("Booking date in YYYY-MM-DD format"),
+            timeSlot: z
+                .enum(["morning", "afternoon", "evening"])
+                .describe("Time slot: 'morning', 'afternoon', or 'evening'"),
+            includeSamagriKit: z
+                .boolean()
+                .default(true)
+                .describe("Whether to include the complete Pooja/Havan samagri kit"),
+        }),
+        execute: async (params) => {
+            try {
+                const booking = await BookingService.createBooking(params);
+                return { success: true, booking };
+            } catch (error: any) {
+                return { success: false, error: error.message };
+            }
+        },
+    }),
+
+    rescheduleRitualBooking: tool({
+        description: "Reschedule an existing booking using its booking code (e.g. BK-1001) to a new date (YYYY-MM-DD) and time slot.",
+        inputSchema: z.object({
+            bookingCode: z.string().describe("Booking reference code, e.g. 'BK-1001'"),
+            newDate: z
+                .string()
+                .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+                .describe("New date in YYYY-MM-DD format"),
+            newTimeSlot: z
+                .enum(["morning", "afternoon", "evening"])
+                .describe("New time slot: 'morning', 'afternoon', or 'evening'")
+        }),
+        execute: async (params) => {
+            try {
+                const updated = await BookingService.rescheduleBooking(params);
+                return { success: true, booking: updated };
+            } catch (error: any) {
+                return { success: false, error: error.message };
+            }
+        },
+    }),
+
+    cancelRitualBooking: tool({
+        description: "Cancel an existing ritual booking using its booking code (e.g. BK-1001).",
+        inputSchema: z.object({
+            bookingCode: z.string().describe("Booking reference code, e.g. 'BK-1001'"),
+            reason: z
+                .string()
+                .optional()
+                .describe("Optional reason for cancelling the booking"),
+        }),
+        execute: async (params) => {
+            try {
+                const cancelled = await BookingService.cancelBooking(params);
+                return { success: true, booking: cancelled };
+            } catch (error: any) {
+                return { success: false, error: error.message };
+            }
+        }
     })
+
 }
