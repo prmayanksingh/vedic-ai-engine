@@ -2,10 +2,28 @@ import { tool } from "ai";
 import z from "zod";
 import ritualModel from "../models/ritual.model.js";
 import { BookingService } from "../services/booking.service.js";
+import { VedaService } from "../services/veda.service.js";
 
 
 
 export const ritualTools = {
+    searchVedicKnowledge: tool({
+        description: "Ask questions about authentic Vedic scriptures, mantras, deities, ritual significance, and spiritual meanings from the Vedic reference dataset.",
+        inputSchema: z.object({
+            query: z
+                .string()
+                .describe("The Vedic scripture, mantra, or spiritual question to look up."),
+        }),
+        execute: async ({ query }) => {
+            try {
+                const answer = await VedaService.askQuestion(query);
+                return { success: true, answer };
+            } catch (error: any) {
+                return { success: true, error: error.message };
+            }
+        },
+    }),
+
     getRitualCatalog: tool({
         description: "Fetch available Vedic rituals (poojas and havans), their Dakshina pricing, duration, samagri kit price, and included samagri items.",
         inputSchema: z.object({
