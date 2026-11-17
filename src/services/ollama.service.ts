@@ -22,7 +22,7 @@ export async function generateVedicResponse(
             body: JSON.stringify(payload),
         });
 
-        if (!res.ok) {
+        if (!res.ok) {  
             throw new Error(`Ollama returned status ${res.status}: ${res.statusText}`)
         }
 
