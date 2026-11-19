@@ -1,7 +1,5 @@
-import { VedicVerse } from "../types/types.js";
 import path from "node:path";
 import fs from "node:fs";
-import { generateVedicResponse } from "./ollama.service.js";
 import vedicVerseModel from "../models/vedicVerse.model.js";
 
 
@@ -53,6 +51,36 @@ export class VedaService {
 
         await vedicVerseModel.insertMany(docsToInsert);
         console.log(`Seeded ${docsToInsert.length} Vedic verses into MongoDB Atlas.`);
+    }
+
+    static async searchVerses(query: string, limit = 3) {
+        const queryVector = await this.getEmbedding(query);
+
+        return vedicVerseModel.aggregate([
+            {
+                $vectorSearch: {
+                    index: "vedic_vector_index",
+                    path: "embedding",
+                    queryVector,
+                    numCandidates: 30,
+                    limit
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    veda: 1,
+                    mandala: 1,
+                    sukta: 1,
+                    verse: 1,
+                    deity: 1,
+                    sanskrit: 1,
+                    translation: 1,
+                    meaning: 1,
+                    score: { $meta: "vectorSearchScore" }
+                },
+            },
+        ]);
     }
 
 }

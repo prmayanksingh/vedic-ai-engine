@@ -16,8 +16,8 @@ export const ritualTools = {
         }),
         execute: async ({ query }) => {
             try {
-                const answer = await VedaService.askQuestion(query);
-                return { success: true, answer };
+                const verses = await VedaService.searchVerses(query);
+                return { success: true, verses };
             } catch (error: any) {
                 return { success: true, error: error.message };
             }

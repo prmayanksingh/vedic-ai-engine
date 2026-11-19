@@ -9,12 +9,13 @@ const PORT = 3000;
 
 async function startServer() {
     try {
-        VedaService.initData();
-        console.log("Vedic scripture data loaded into memory.");
-
         await connectDB();
+
         // Seed initial rituals, pandits & Booking (BK-1001) if DB is empty
         await seedIfEmpty();
+
+        VedaService.initData();
+        console.log("Vedic scripture data loaded into memory.");
 
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
