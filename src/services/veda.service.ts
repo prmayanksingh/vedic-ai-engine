@@ -30,6 +30,7 @@ export class VedaService {
             data: Array<{ index: number; embedding: number[] }>;
         };
 
+        // the sorting like just like sort(a-b) but it sorted on the basis of index feild
         return json.data.sort((a, b) => a.index - b.index).map((item) => item.embedding);
     }
 
@@ -127,7 +128,7 @@ export class VedaService {
             for (let j = 0; j < chunk.length; j++) {
                 docsToInsert.push({ ...chunk[j], embedding: embeddings[j] });
             }
-        }
+        }   
 
         await vedicVerseModel.insertMany(docsToInsert);
         console.log(`Seeded ${docsToInsert.length} Rigveda + Bhagavad Gita verses into MongoDB Atlas.`);
