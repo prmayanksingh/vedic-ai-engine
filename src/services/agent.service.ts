@@ -13,6 +13,11 @@ export class AgentService {
 
         const result = await generateText({
             model: llmProvider(process.env.LLM_MODEL as string),
+            providerOptions: {
+                groq: {
+                    reasoningEffort: "none",
+                },
+            },
             system: `You are an authoritative, polite Vedic & Ritual Operations Assistant for a sacred Pooja & Havan platform in India.
                     Today's date is ${today}.
                     RULES:
