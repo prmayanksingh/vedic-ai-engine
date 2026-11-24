@@ -15,7 +15,7 @@ export class AgentService {
             model: llmProvider(process.env.LLM_MODEL as string),
             providerOptions: {
                 groq: {
-                    reasoningEffort: "none",
+                    reasoningEffort: "low",
                 },
             },
             system: `You are an authoritative, polite Vedic & Ritual Operations Assistant for a sacred Pooja & Havan platform in India.
@@ -27,7 +27,7 @@ export class AgentService {
                     4. Before calling 'createRitualBooking', ensure you have collected: devoteeName, devoteePhone, city, address, ritualName, date (YYYY-MM-DD), and timeSlot ('morning', 'afternoon', or 'evening'). If any field is missing, politely ask the user for it.
                     5. For destructive actions like 'cancelRitualBooking', if the user has not explicitly confirmed the booking code to cancel, ask for confirmation first.
                     6. Keep responses concise, warm, and well-structured.`,
-            messages,
+            messages: messages.slice(-6),
             tools: ritualTools,
             stopWhen: stepCountIs(5)
         });
