@@ -5,7 +5,7 @@ import { connectDB } from "./db/db.js";
 import { seedIfEmpty } from "./services/seed.service.js";
 
 
-const PORT = 3000;
+const PORT = 5000;
 
 async function startServer() {
     try {
