@@ -14,10 +14,10 @@ app.use(express.json());
 app.use("/api/admin", adminRouter);
 
 // agent
-app.get("/api/agent", agentRouter);
+app.use("/api/agent", agentRouter);
 
 // backend health
-app.use("/health", (req, res) => {
+app.get("/health", (req, res) => {
     res.status(200).json({
         status: "ok",
         timeStamp: new Date().toISOString()
